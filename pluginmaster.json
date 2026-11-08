@@ -1,0 +1,62 @@
+[
+    {
+        "Author": "Sparrow-prime",
+        "Name": "AutoBuyer",
+        "Punchline": "市场布告板增强：跨服比价、在售列表与按目标数量一键购买。",
+        "Description": "为最终幻想14国服提供的市场布告板增强插件：跨服价格排行、在售物品列表与 NPC 收购价参照，并可按目标持有数量从最低价开始自动购买。",
+        "InternalName": "AutoBuyer",
+        "AssemblyVersion": "1.1.6.0",
+        "ApplicableVersion": "any",
+        "RepoUrl": "https://github.com/Sparrow-prime/FFXIV-AutoBuyer",
+        "Tags": [
+                     "marketboard",
+                     "market",
+                     "universalis",
+                     "purchase",
+                     "utility"
+                 ],
+        "DalamudApiLevel": 15,
+        "DownloadLinkInstall": "https://raw.githubusercontent.com/Sparrow-prime/DalamudPlugins/main/plugins/AutoBuyer/1.1.6/AutoBuyer.zip",
+        "DownloadLinkUpdate": "https://raw.githubusercontent.com/Sparrow-prime/DalamudPlugins/main/plugins/AutoBuyer/1.1.6/AutoBuyer.zip",
+        "DownloadLinkTesting": "https://raw.githubusercontent.com/Sparrow-prime/DalamudPlugins/main/plugins/AutoBuyer/1.1.6/AutoBuyer.zip",
+        "LastUpdate": 1794161929,
+        "DownloadCount": 0,
+        "IsHide": false,
+        "IsTestingExclusive": false,
+        "LoadRequiredState": 0,
+        "LoadSync": false,
+        "CanUnloadAsync": false,
+        "LoadPriority": 0,
+        "AcceptsFeedback": true
+    },
+    {
+        "Author": "Sparrow-prime",
+        "Name": "FFXIV-CrystalTransfer",
+        "Punchline": "Transfer selected crystals from your inventory to your retainers automatically.",
+        "Description": "自动将背包中的水晶（碎晶/水晶/晶簇）存入雇员背包。在传唤铃旁执行 /crystaltransfer auto 即可逐个雇员存入勾选的水晶。",
+        "InternalName": "FFXIV-CrystalTransfer",
+        "AssemblyVersion": "1.0.1.0",
+        "ApplicableVersion": "any",
+        "RepoUrl": "https://github.com/Sparrow-prime/FFXIV-CrystalTransfer",
+        "Tags": [
+                     "crystal",
+                     "retainer",
+                     "transfer",
+                     "inventory",
+                     "utility"
+                 ],
+        "DalamudApiLevel": 15,
+        "DownloadLinkInstall": "https://raw.githubusercontent.com/Sparrow-prime/DalamudPlugins/main/plugins/FFXIV-CrystalTransfer/1.0.1/FFXIV-CrystalTransfer.zip",
+        "DownloadLinkUpdate": "https://raw.githubusercontent.com/Sparrow-prime/DalamudPlugins/main/plugins/FFXIV-CrystalTransfer/1.0.1/FFXIV-CrystalTransfer.zip",
+        "DownloadLinkTesting": "https://raw.githubusercontent.com/Sparrow-prime/DalamudPlugins/main/plugins/FFXIV-CrystalTransfer/1.0.1/FFXIV-CrystalTransfer.zip",
+        "LastUpdate": 1794161929,
+        "DownloadCount": 0,
+        "IsHide": false,
+        "IsTestingExclusive": false,
+        "LoadRequiredState": 0,
+        "LoadSync": false,
+        "CanUnloadAsync": false,
+        "LoadPriority": 0,
+        "AcceptsFeedback": true
+    }
+]
