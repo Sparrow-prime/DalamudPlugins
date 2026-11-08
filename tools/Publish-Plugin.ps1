@@ -18,7 +18,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('AutoBuyer', 'FFXIV-CrystalTransfer', 'InventoryTools')]
+    [ValidateSet('AutoBuyer', 'CrystalTransfer', 'InventoryTools')]
     [string]$Plugin,
 
     [switch]$SkipBuild
@@ -43,10 +43,10 @@ $ProjectMap = @{
         Zip      = 'E:\Code\Output\FFXIV-AutoBuyer\AutoBuyer\latest.zip'
         RepoUrl  = $null
     }
-    'FFXIV-CrystalTransfer' = @{
+    'CrystalTransfer' = @{
         Csproj   = 'E:\Code\Work\FFXIV-CrystalTransfer\FFXIV-CrystalTransfer.csproj'
-        Manifest = 'E:\Code\Output\FFXIV-CrystalTransfer\FFXIV-CrystalTransfer.json'
-        Zip      = 'E:\Code\Output\FFXIV-CrystalTransfer\FFXIV-CrystalTransfer\latest.zip'
+        Manifest = 'E:\Code\Output\FFXIV-CrystalTransfer\CrystalTransfer.json'
+        Zip      = 'E:\Code\Output\FFXIV-CrystalTransfer\CrystalTransfer\latest.zip'
         RepoUrl  = $null
     }
     # Allagan Tools 国服客制分支：构建产物落在工程自己的 bin\Release\，本脚本不去同步，

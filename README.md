@@ -16,7 +16,7 @@
    https://raw.githubusercontent.com/Sparrow-prime/DalamudPlugins/main/pluginmaster.json
    ```
 
-3. 保存后打开 `/xlplugins` → 在「全部插件」里搜索 **AutoBuyer** 或 **FFXIV-CrystalTransfer** → 安装。
+3. 保存后打开 `/xlplugins` → 在「全部插件」里搜索 **AutoBuyer**、**CrystalTransfer** 或 **Allagan Tools** → 安装。
 
 > 仓库必须保持**公开**，私有仓库 Dalamud 拉不到清单。
 
@@ -25,8 +25,11 @@
 | 插件 | 内部名 | 当前版本 | 说明 | 源码 |
 | ---- | ---- | ---- | ---- | ---- |
 | AutoBuyer | `AutoBuyer` | 1.1.6 | 市场布告板增强：跨服比价、在售列表、按目标数量一键购买 | [FFXIV-AutoBuyer](https://github.com/Sparrow-prime/FFXIV-AutoBuyer) |
-| FFXIV-CrystalTransfer | `FFXIV-CrystalTransfer` | 1.0.1 | 把背包中的水晶自动存入雇员背包 | [FFXIV-CrystalTransfer](https://github.com/Sparrow-prime/FFXIV-CrystalTransfer) |
+| CrystalTransfer | `CrystalTransfer` | 1.0.2 | 把背包中的水晶自动存入雇员背包 | [FFXIV-CrystalTransfer](https://github.com/Sparrow-prime/FFXIV-CrystalTransfer) |
 | Allagan Tools（国服客制分支） | `InventoryTools` | 15.0.13 | 物品清单追踪、筛选、制作规划；这里发布的是国服支持版 | [InventoryTools-spcn](https://github.com/Sparrow-prime/InventoryTools-spcn) |
+
+> **1.0.2 起内部名变更**：`FFXIV-CrystalTransfer` → `CrystalTransfer`。Dalamud 按内部名识别插件，
+> 所以对它是「另一款插件」：装过旧版的用户要先卸载旧版再装新版，旧版的勾选配置不会带过来。
 
 ## 关于 Allagan Tools 的同名问题
 
@@ -45,7 +48,7 @@
 ```powershell
 # 构建 + 打包进仓库 + 更新 pluginmaster.json
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Publish-Plugin.ps1 -Plugin AutoBuyer
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Publish-Plugin.ps1 -Plugin FFXIV-CrystalTransfer
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Publish-Plugin.ps1 -Plugin CrystalTransfer
 # Allagan Tools 的产物落在自己工程的 bin\Release\，先按项目流程构建、把 Output\InventoryTools-spcn 更新好，再带 -SkipBuild：
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Publish-Plugin.ps1 -Plugin InventoryTools -SkipBuild
 
