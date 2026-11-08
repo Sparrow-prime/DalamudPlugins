@@ -26,12 +26,19 @@
 | ---- | ---- | ---- | ---- | ---- |
 | AutoBuyer | `AutoBuyer` | 1.1.6 | 市场布告板增强：跨服比价、在售列表、按目标数量一键购买 | [FFXIV-AutoBuyer](https://github.com/Sparrow-prime/FFXIV-AutoBuyer) |
 | FFXIV-CrystalTransfer | `FFXIV-CrystalTransfer` | 1.0.1 | 把背包中的水晶自动存入雇员背包 | [FFXIV-CrystalTransfer](https://github.com/Sparrow-prime/FFXIV-CrystalTransfer) |
+| Allagan Tools（国服客制分支） | `InventoryTools` | 15.0.13 | 物品清单追踪、筛选、制作规划；这里发布的是国服支持版 | [InventoryTools-spcn](https://github.com/Sparrow-prime/InventoryTools-spcn) |
 
-## 关于「小树枝信使 FeoMessenger」
+## 关于 Allagan Tools 的同名问题
 
-`FFXIV-LNPCMSR` 是**安卓 App**（电脑端鲶鱼精邮差把游戏聊天转发到手机），不是 Dalamud 插件，
-**不能**放进本仓库、也装不进 Dalamud。它的发布走自己的仓库：
-<https://github.com/Sparrow-prime/FFXIV-LNPCMSR/releases>。
+这一条的内部名是 `InventoryTools`，与官方 Allagan Tools 完全相同，这是**有意的**：国服版要接替官方版，
+用户原有配置、以及别人依赖的 IPC（`AllaganTools.ItemCount`，CrystalTransfer 就靠它取数量）才能继续用。
+副作用要知道：
+
+- 同时添加了别的提供 Allagan Tools 的仓库时，插件列表里会出现同名条目；
+- 装本仓库的版本会替换已装的官方版（配置保留，版本按 `AssemblyVersion` 比大小）。
+
+它的 `RepoUrl` 指向客制分支仓库，插件页点「源码」不会跳到上游。
+打包体积约 8 MB（一堆依赖 DLL），所以每次发版仓库会多一个 zips 目录，旧版本目录可以随时删。
 
 ## 发版流程（作者）
 
@@ -39,6 +46,8 @@
 # 构建 + 打包进仓库 + 更新 pluginmaster.json
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Publish-Plugin.ps1 -Plugin AutoBuyer
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Publish-Plugin.ps1 -Plugin FFXIV-CrystalTransfer
+# Allagan Tools 的产物落在自己工程的 bin\Release\，先按项目流程构建、把 Output\InventoryTools-spcn 更新好，再带 -SkipBuild：
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Publish-Plugin.ps1 -Plugin InventoryTools -SkipBuild
 
 git add -A
 git commit -m "publish: AutoBuyer 1.1.7"

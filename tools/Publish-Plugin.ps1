@@ -18,7 +18,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('AutoBuyer', 'FFXIV-CrystalTransfer')]
+    [ValidateSet('AutoBuyer', 'FFXIV-CrystalTransfer', 'InventoryTools')]
     [string]$Plugin,
 
     [switch]$SkipBuild
@@ -34,21 +34,40 @@ $RepoBaseUrl = 'https://raw.githubusercontent.com/Sparrow-prime/DalamudPlugins/m
 $Root       = Split-Path -Parent $PSScriptRoot
 $MasterPath = Join-Path $Root 'pluginmaster.json'
 
-# 每个插件的源码位置与构建输出位置（与各项目 README 里的构建命令一致）
+# 每个插件：源码工程、插件清单（发表时读它取元数据）、打包好的 latest.zip。
+# RepoUrl 是插件页面上「源码」链接：fork 的项目指向自己的仓库，方便别人找到这一份。
 $ProjectMap = @{
     'AutoBuyer' = @{
-        Csproj = 'E:\Code\Work\FFXIV-AutoBuyer\FFXIV-AutoBuyer\FFXIV-AutoBuyer.csproj'
-        Output = 'E:\Code\Output\FFXIV-AutoBuyer'
+        Csproj   = 'E:\Code\Work\FFXIV-AutoBuyer\FFXIV-AutoBuyer\FFXIV-AutoBuyer.csproj'
+        Manifest = 'E:\Code\Output\FFXIV-AutoBuyer\AutoBuyer.json'
+        Zip      = 'E:\Code\Output\FFXIV-AutoBuyer\AutoBuyer\latest.zip'
+        RepoUrl  = $null
     }
     'FFXIV-CrystalTransfer' = @{
-        Csproj = 'E:\Code\Work\FFXIV-CrystalTransfer\FFXIV-CrystalTransfer.csproj'
-        Output = 'E:\Code\Output\FFXIV-CrystalTransfer'
+        Csproj   = 'E:\Code\Work\FFXIV-CrystalTransfer\FFXIV-CrystalTransfer.csproj'
+        Manifest = 'E:\Code\Output\FFXIV-CrystalTransfer\FFXIV-CrystalTransfer.json'
+        Zip      = 'E:\Code\Output\FFXIV-CrystalTransfer\FFXIV-CrystalTransfer\latest.zip'
+        RepoUrl  = $null
+    }
+    # Allagan Tools 国服客制分支：构建产物落在工程自己的 bin\Release\，本脚本不去同步，
+    # 发布前请先把 E:\Code\Output\InventoryTools-spcn 更新好，再带 -SkipBuild 跑。
+    'InventoryTools' = @{
+        Csproj   = 'E:\Code\Work\InventoryTools-spcn\InventoryTools\InventoryTools.csproj'
+        Manifest = 'E:\Code\Output\InventoryTools-spcn\InventoryTools.json'
+        Zip      = 'E:\Code\Output\InventoryTools-spcn\latest.zip'
+        RepoUrl  = 'https://github.com/Sparrow-prime/InventoryTools-spcn'
+        NoBuild  = $true
     }
 }
 
 $project = $ProjectMap[$Plugin]
 
 # 1. 构建 -------------------------------------------------------------------
+if ($project.NoBuild -and -not $SkipBuild) {
+    throw "InventoryTools 的构建产物在 InventoryTools\bin\Release\，本脚本不会自动同步到 E:\Code\Output。" +
+          "请先按项目流程构建并把 Output\InventoryTools-spcn 更新好，再带 -SkipBuild 发布。"
+}
+
 if (-not $SkipBuild) {
     Write-Host "[1/4] 构建 $Plugin ..." -ForegroundColor Cyan
     & dotnet build $project.Csproj -c Release
@@ -61,7 +80,7 @@ else {
 }
 
 # 2. 读插件清单 -------------------------------------------------------------
-$manifestPath = Join-Path $project.Output "$Plugin.json"
+$manifestPath = $project.Manifest
 if (-not (Test-Path $manifestPath)) {
     throw "找不到插件清单：$manifestPath"
 }
@@ -80,7 +99,7 @@ if ([int]$manifest.DalamudApiLevel -ne 15) {
 }
 
 # 3. 拷 zip 进仓库 ----------------------------------------------------------
-$zipSource = Join-Path $project.Output "$Plugin\latest.zip"
+$zipSource = $project.Zip
 if (-not (Test-Path $zipSource)) {
     throw "找不到构建产物：$zipSource"
 }
@@ -91,6 +110,17 @@ try {
     $dllName = "$internalName.dll"
     $hasDll  = @($archive.Entries | Where-Object { $_.FullName -eq $dllName }).Count -gt 0
     $hasJson = @($archive.Entries | Where-Object { $_.FullName -eq "$internalName.json" }).Count -gt 0
+    $inner   = $null
+    $jsonEntry = $archive.Entries | Where-Object { $_.FullName -eq "$internalName.json" } | Select-Object -First 1
+    if ($null -ne $jsonEntry) {
+        $reader = New-Object System.IO.StreamReader($jsonEntry.Open(), [System.Text.Encoding]::UTF8)
+        try {
+            $inner = $reader.ReadToEnd() | ConvertFrom-Json
+        }
+        finally {
+            $reader.Dispose()
+        }
+    }
 }
 finally {
     $archive.Dispose()
@@ -98,6 +128,14 @@ finally {
 
 if (-not $hasDll -or -not $hasJson) {
     throw "zip 根目录缺少 $internalName.dll / $internalName.json，Dalamud 无法安装。"
+}
+
+# Dalamud 安装时会逐字比对 zip 内清单与仓库清单的内部名、版本号
+if ([string]$inner.InternalName -ne $internalName) {
+    throw "zip 内清单 InternalName=$($inner.InternalName)，与 $internalName 不一致。"
+}
+if ([string]$inner.AssemblyVersion -ne $version) {
+    throw "zip 内清单 AssemblyVersion=$($inner.AssemblyVersion)，与 $version 不一致（Dalamud 会拒绝安装）。"
 }
 
 $zipDir = Join-Path $Root "plugins\$internalName\$shortVersion"
@@ -138,6 +176,11 @@ if ($null -ne $existing) {
     $downloadCount = [int64]$existing.DownloadCount
 }
 
+$repoUrl = [string]$manifest.RepoUrl
+if (-not [string]::IsNullOrWhiteSpace($project.RepoUrl)) {
+    $repoUrl = $project.RepoUrl
+}
+
 $entry = [ordered]@{
     Author              = [string]$manifest.Author
     Name                = [string]$manifest.Name
@@ -146,7 +189,7 @@ $entry = [ordered]@{
     InternalName        = $internalName
     AssemblyVersion     = $version
     ApplicableVersion   = [string]$manifest.ApplicableVersion
-    RepoUrl             = [string]$manifest.RepoUrl
+    RepoUrl             = $repoUrl
     Tags                = @($manifest.Tags)
     DalamudApiLevel     = [int]$manifest.DalamudApiLevel
     DownloadLinkInstall = $downloadUrl
@@ -161,6 +204,17 @@ $entry = [ordered]@{
     CanUnloadAsync      = $false
     LoadPriority        = 0
     AcceptsFeedback     = $true
+}
+
+# 清单里带了图标 / 截图 / 更新说明就一并带上（Allagan Tools 有）
+if (-not [string]::IsNullOrWhiteSpace([string]$manifest.IconUrl)) {
+    $entry.IconUrl = [string]$manifest.IconUrl
+}
+if ($null -ne $manifest.ImageUrls -and @($manifest.ImageUrls).Count -gt 0) {
+    $entry.ImageUrls = @($manifest.ImageUrls)
+}
+if (-not [string]::IsNullOrWhiteSpace([string]$manifest.Changelog)) {
+    $entry.Changelog = [string]$manifest.Changelog
 }
 
 $newMaster = @()
