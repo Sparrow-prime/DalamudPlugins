@@ -47,13 +47,7 @@
 
 | 现象 | 原因 / 处理 |
 | ---- | ---- |
-| 游戏里加仓库后提示「无法获取插件列表」 | 地址不通。先用浏览器打开清单地址确认能下载；国内网络可改用 jsDelivr 镜像（见下） |
+| 游戏里加仓库后提示「无法获取插件列表」 | 地址不通。先用浏览器打开清单地址，确认能下载到 JSON |
 | 插件列表里出现但显示「不兼容」 | `DalamudApiLevel` 不是 15，或 `AssemblyVersion` 与实际包不一致 |
 | 安装时报「Distributed internal name does not match」/ 版本不匹配 | zip 里的 `<内部名>.json` 与 `pluginmaster.json` 里的 `InternalName`、`AssemblyVersion` 不一致 |
 | 装了但没更新 | `AssemblyVersion` 没变。`1.1.6.0` 与 `1.1.6` 在 Dalamud 眼里不是同一个版本号 |
-
-### 镜像（GitHub 直连不稳时）
-
-把 `https://raw.githubusercontent.com/Sparrow-prime/DalamudPlugins/main/` 换成
-`https://cdn.jsdelivr.net/gh/Sparrow-prime/DalamudPlugins@main/`，两条路径同样可用（清单和 zip 都能走）。
-jsDelivr 缓存较久，更新后短时间内可能还拿到旧的 `pluginmaster.json`。
