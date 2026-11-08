@@ -1,8 +1,8 @@
 # DalamudPlugins — Sparrow-prime 的 FF14 插件第三方仓库
 
-面向**国服 XIVLauncherCN（Dalamud API 15）**的第三方插件库，收录我自己的两个 Dalamud 插件。
+面向**国服 XIVLauncherCN（Dalamud API 15）**的第三方插件库，收录我维护的三个 Dalamud 插件。
 
-- 仓库清单：`pluginmaster.json`
+- 清单：`pluginmaster.json`
 - 插件包：`plugins/<内部名>/<版本>/<内部名>.zip`
 
 ## 安装
@@ -40,32 +40,8 @@
 - 同时添加了别的提供 Allagan Tools 的仓库时，插件列表里会出现同名条目；
 - 装本仓库的版本会替换已装的官方版（配置保留，版本按 `AssemblyVersion` 比大小）。
 
-它的 `RepoUrl` 指向客制分支仓库，插件页点「源码」不会跳到上游。
-打包体积约 8 MB（一堆依赖 DLL），所以每次发版仓库会多一个 zips 目录，旧版本目录可以随时删。
-
-## 发版流程（作者）
-
-```powershell
-# 构建 + 打包进仓库 + 更新 pluginmaster.json
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Publish-Plugin.ps1 -Plugin AutoBuyer
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Publish-Plugin.ps1 -Plugin CrystalTransfer
-# Allagan Tools 的产物落在自己工程的 bin\Release\，先按项目流程构建、把 Output\InventoryTools-spcn 更新好，再带 -SkipBuild：
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Publish-Plugin.ps1 -Plugin InventoryTools -SkipBuild
-
-git add -A
-git commit -m "publish: AutoBuyer 1.1.7"
-git push
-```
-
-脚本做的事：
-
-1. `dotnet build <工程>.csproj -c Release`（加 `-SkipBuild` 只用已有产物）；
-2. 读插件清单 `<内部名>.json`，校验 zip 根目录里有 `<内部名>.dll` 和 `<内部名>.json`；
-3. 把 `latest.zip` 拷到 `plugins/<内部名>/<版本>/<内部名>.zip`；
-4. 用最新版本号、下载链接、`LastUpdate` 覆盖 `pluginmaster.json` 里的对应条目（保留 `DownloadCount`）。
-
-**为什么按版本建目录**：Dalamud 按 `AssemblyVersion` 判断要不要更新，
-同名 zip 覆盖上传时 CDN 可能还返回旧包；每次发版换新路径就没这个问题。
+它的 `RepoUrl` 指向客制分支仓库，插件页点「源码」不会跳到上游。打包体积约 8 MB，
+所以仓库里按版本各存一份，旧版本目录可以随时删。
 
 ## 排错
 
@@ -73,11 +49,11 @@ git push
 | ---- | ---- |
 | 游戏里加仓库后提示「无法获取插件列表」 | 地址不通。先用浏览器打开清单地址确认能下载；国内网络可改用 jsDelivr 镜像（见下） |
 | 插件列表里出现但显示「不兼容」 | `DalamudApiLevel` 不是 15，或 `AssemblyVersion` 与实际包不一致 |
-| 安装时报「Distributed internal name does not match」/ 版本不匹配 | zip 里的 `<内部名>.json` 与 `pluginmaster.json` 里的 `InternalName`、`AssemblyVersion` 不一致；用发布脚本生成，别手改 |
-| 装了但没更新 | `AssemblyVersion` 没变。`1.1.6.0` 与 `1.1.6` 在 Dalamud 眼里不是同一个版本号，别漏掉第四位 |
+| 安装时报「Distributed internal name does not match」/ 版本不匹配 | zip 里的 `<内部名>.json` 与 `pluginmaster.json` 里的 `InternalName`、`AssemblyVersion` 不一致 |
+| 装了但没更新 | `AssemblyVersion` 没变。`1.1.6.0` 与 `1.1.6` 在 Dalamud 眼里不是同一个版本号 |
 
 ### 镜像（GitHub 直连不稳时）
 
 把 `https://raw.githubusercontent.com/Sparrow-prime/DalamudPlugins/main/` 换成
 `https://cdn.jsdelivr.net/gh/Sparrow-prime/DalamudPlugins@main/`，两条路径同样可用（清单和 zip 都能走）。
-jsDelivr 缓存较久，发版后短时间内可能还拿到旧的 `pluginmaster.json`。
+jsDelivr 缓存较久，更新后短时间内可能还拿到旧的 `pluginmaster.json`。

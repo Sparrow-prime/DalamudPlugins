@@ -4,7 +4,15 @@
 
 .DESCRIPTION
     流程：构建（可跳过）→ 读取插件清单 → 把 latest.zip 拷到 plugins/<内部名>/<版本>/ →
-    更新 pluginmaster.json 里对应条目（版本号、下载链接、LastUpdate）。
+    更新 pluginmaster.json 里对应条目（版本号、下载链接、LastUpdate）。推送由调用者自己做。
+
+    要点：
+    1. zip 内清单的 InternalName / AssemblyVersion 必须与仓库条目逐字一致，不一致脚本直接报错；
+       Dalamud 安装时同样逐字比对，1.1.6 与 1.1.6.0 在它眼里不是一个版本。
+    2. 按版本建目录（plugins/<内部名>/<版本>/）：Dalamud 靠 AssemblyVersion 判断更新，
+       同名 zip 覆盖上传时 CDN 可能还返回旧包，换新路径最稳。
+    3. InventoryTools 的构建产物落在它工程的 bin\Release\，本脚本不负责同步到 E:\Code\Output；
+       先按项目流程构建并把 Output\InventoryTools-spcn 更新好，再带 -SkipBuild 运行。
 
 .PARAMETER Plugin
     插件内部名（即程序集名），见 plugins/ 下的目录名。
